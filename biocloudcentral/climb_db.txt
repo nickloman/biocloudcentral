@@ -1,0 +1,45 @@
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE "biocloudcentral_cloud" ("id" integer NOT NULL PRIMARY KEY, "added" datetime NOT NULL, "updated" datetime NOT NULL, "name" varchar(100) NOT NULL, "cloud_type" varchar(30) NOT NULL, "bucket_default" varchar(255) NULL, "region_name" varchar(100) NOT NULL, "region_endpoint" varchar(255) NOT NULL, "ec2_port" integer NULL, "ec2_conn_path" varchar(255) NOT NULL DEFAULT '/', "cidr_range" varchar(25) NULL, "is_secure" bool NOT NULL DEFAULT False, "s3_host" varchar(255) NOT NULL, "s3_port" integer NULL, "s3_conn_path" varchar(255) NOT NULL DEFAULT '/');
+INSERT INTO "biocloudcentral_cloud" VALUES(1,'2012-03-23 21:20:13','2012-03-27 21:46:39','Amazon','ec2','','us-east-1','ec2.amazonaws.com',NULL,'/','',1,'s3.amazonaws.com',NULL,'/');
+INSERT INTO "biocloudcentral_cloud" VALUES(2,'2016-01-12 10:12:24.366392','2016-01-12 10:12:24.366414','CLIMB','openstack','cloudman_os','nova','147.188.173.10',8773,'/services/Cloud','147.188.173.0/24',0,'swift.rc.nectar.org.au',8888,'/');
+COMMIT;
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE "biocloudcentral_image" ("updated" datetime, "added" datetime, "kernel_id" varchar(30), "cloud_id" integer, "default" bool, "ramdisk_id" varchar(30), "image_id" varchar(30), "id" integer PRIMARY KEY, "description" varchar(255) NOT NULL DEFAULT '');
+INSERT INTO "biocloudcentral_image" VALUES('2012-06-26 07:11:27','2012-06-26 07:11:27','',1,1,'','ami-46d4792f',4,'CloudBioLinux and CloudMan Ubuntu 12.04: 27 June 2012');
+INSERT INTO "biocloudcentral_image" VALUES('2012-03-26 19:41:27','2012-03-26 19:41:27','',1,0,'','ami-500cd139',5,'CloudBioLinux and CloudMan Ubuntu 11.10: 5 March 2012');
+INSERT INTO "biocloudcentral_image" VALUES('2012-03-26 19:42:02','2012-03-26 19:42:02','',1,0,'','ami-da58aab3',6,'Galaxy CloudMan on Ubuntu 10.04: 22 March 2011');
+INSERT INTO "biocloudcentral_image" VALUES('2013-08-01 00:00:00','2013-08-01 00:00:00','',1,0,'','ami-3df7ff54',13,'JCVI Viral and Prokaryotic Pipelines');
+INSERT INTO "biocloudcentral_image" VALUES('2016-01-13 10:45:45.325571','2016-01-12 10:20:45.335014','',2,1,'','ami-0000005c',14,'GVL 4.0 Beta 2.2');
+COMMIT;
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE "biocloudcentral_flavor" ("id" integer NOT NULL PRIMARY KEY, "added" datetime NOT NULL, "updated" datetime NOT NULL, "image_id" integer NOT NULL, "name" varchar(100) NOT NULL, "description" varchar(255) NOT NULL, "user_data" varchar(16384) NOT NULL, "default" bool NOT NULL DEFAULT False);
+INSERT INTO "biocloudcentral_flavor" VALUES(1,'2016-01-12 10:20:45.341952','2016-01-12 10:20:45.341970',14,'mGVL 0.8.2 test','Microbial GVL 0.8.2 test','use_object_store: False
+bucket_default: cloudman-gvl-400
+initial_cluster_type: Galaxy
+galaxy_data_option: transient
+gvl_config: { install : [''gvl_cmdline_utilities''] }
+post_start_script_url: ''file:///opt/gvl/scripts/triggers;file:///mnt/galaxy/other_tools;file:///mnt/galaxy/gvl/poststart.d''
+cluster_templates:
+  - name: Galaxy
+    filesystem_templates:
+    - name: galaxy
+      type: transient
+      roles: galaxyTools,galaxyData
+      data_source: archive
+      archive_url: https://swift.rc.nectar.org.au:8888/v1/AUTH_377/cloudman-os/galaxyFS-4.00-micro0.8.2.tar.gz
+      archive_md5: 9cf8df537fd0cc3aa380d9c1b201a37e
+    - name: galaxyIndices
+      type: archive
+      roles: galaxyIndices
+      archive_url: https://swift.rc.nectar.org.au:8888/v1/AUTH_377/cloudman-os/microGVL-indices-0.2.tar.gz
+      archive_md5: 119f2dd00434de356534200af84bac05
+  - name: Data
+    filesystem_templates:
+    - name: galaxy
+      type: volume
+',1);
+CREATE INDEX "biocloudcentral_flavor_6682136" ON "biocloudcentral_flavor" ("image_id");
+COMMIT;
